@@ -9,8 +9,11 @@ UCarFrontWheel::UCarFrontWheel()
 	WheelRadius = 40.f;
 	WheelWidth = 40.f;
 
+	MaxSteerAngle = 45.f;
 	bAffectedByEngine = true;
 	bAffectedByHandbrake = true;
 	bAffectedBySteering = true;
+
+	FrictionForceMultiplier = 3.5f;
 	
 }

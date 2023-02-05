@@ -4,11 +4,13 @@
 #include "CustomGameMode.h"
 #include "CustomGameState.h"
 #include "Car.h"
+#include "CustomPlayerController.h"
 
 ACustomGameMode::ACustomGameMode()
 {
 	GameStateClass = ACustomGameState::StaticClass();
 	DefaultPawnClass = ACar::StaticClass();
+	PlayerControllerClass = ACustomPlayerController::StaticClass();
 }
 
 void ACustomGameMode::BeginPlay()

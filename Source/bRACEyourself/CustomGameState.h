@@ -13,5 +13,14 @@ UCLASS()
 class BRACEYOURSELF_API ACustomGameState : public AGameStateBase
 {
 	GENERATED_BODY()
+
+private:
+	
+
+public:
+	ACustomGameState();
+
+	
+
 	
 };

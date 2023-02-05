@@ -16,21 +16,29 @@ UCarMovementComponent::UCarMovementComponent()
 	WheelSetups[2].WheelClass = UCarBackWheel::StaticClass();
 	WheelSetups[3].WheelClass = UCarBackWheel::StaticClass();
 
+	bReverseAsBrake = false;
+
+	EngineSetup.MaxRPM = 7500.f;
+	EngineSetup.EngineIdleRPM = 1000.f;
+
 	TransmissionSetup.bUseAutomaticGears = false;
 	TransmissionSetup.bUseAutoReverse = false;
 	TransmissionSetup.GearChangeTime = 0.3f;
-	bReverseAsBrake = false;
+
+	TransmissionSetup.FinalRatio = 0.6f;
+	TransmissionSetup.ForwardGearRatios.SetNum(6);
+	TransmissionSetup.ForwardGearRatios[0] = 45.f;
+	TransmissionSetup.ForwardGearRatios[1] = 35.f;
+	TransmissionSetup.ForwardGearRatios[2] = 25.f;
+	TransmissionSetup.ForwardGearRatios[3] = 15.f;
+	TransmissionSetup.ForwardGearRatios[4] = 7.f;
+	TransmissionSetup.ForwardGearRatios[5] = 4.f;
 	
 }
 
 void UCarMovementComponent::MoveForward(float Val)
 {
 	if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
-		if (GEngine) {
-			GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Yellow, UEnum::GetValueAsString(EngineState));
-			GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Orange, FString::FromInt(GetTargetGear()));
-			GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Red, FString::FromInt(GetEngineRotationSpeed()));
-		}
 		if (!bGearChanging) {
 			if (Val >= 0.f) {
 				if (EngineState == EEngineState::EES_Forward) {
@@ -46,7 +54,7 @@ void UCarMovementComponent::MoveForward(float Val)
 				SetThrottleInput(0.f);
 				SetBrakeInput(-Val);
 			}
-			if (GetEngineRotationSpeed() > 4000.f && GetTargetGear() != 6) {
+			if (GetEngineRotationSpeed() > (GetEngineMaxRotationSpeed() - 500.f) && GetTargetGear() != 6) {
 				if (GEngine)
 					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("BOOOOM"));
 				EngineState = EEngineState::EES_Failure;
@@ -56,10 +64,10 @@ void UCarMovementComponent::MoveForward(float Val)
 				if (GEngine)
 					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MEH"));
 				SetThrottleInput(0.f);
+				SetTargetGear(0, true);
 				EngineState = EEngineState::EES_Off;
 				GetWorld()->GetTimerManager().SetTimer(EngineRestartTimerHandle, this, &UCarMovementComponent::RestartEngine, 3.f, false);
 			}
-
 		}
 	}
 }
@@ -71,14 +79,22 @@ void UCarMovementComponent::MoveRight(float Val)
 
 void UCarMovementComponent::GearUp()
 {
-	if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
-		if (GetTargetGear() < 6) {
-			if (EngineState == EEngineState::EES_Reverse) {
-				EngineState = EEngineState::EES_Forward;
-				ChangeGearBy(2);
-			}
-			else {
-				ChangeGearBy(1);
+	if (bGearChanging) {
+		if (tempGear != -1)
+			tempGear += 1;
+		else
+			tempGear += 2;
+	}
+	else {
+		if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
+			if (GetTargetGear() < 6) {
+				if (EngineState == EEngineState::EES_Reverse) {
+					EngineState = EEngineState::EES_Forward;
+					ChangeGearBy(2);
+				}
+				else {
+					ChangeGearBy(1);
+				}
 			}
 		}
 	}
@@ -86,17 +102,25 @@ void UCarMovementComponent::GearUp()
 
 void UCarMovementComponent::GearDown()
 {
-	if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
-		if (GetTargetGear() > 1) {
-			ChangeGearBy(-1);
-		}
-		else if (GetTargetGear() == 1 ) {
-			EngineState = EEngineState::EES_Reverse;
-			ChangeGearBy(-2);
-		}
-		else if (GetTargetGear() == 0) {
-			EngineState = EEngineState::EES_Reverse;
-			ChangeGearBy(-1);
+	if (bGearChanging) {
+		if (tempGear != 1)
+			tempGear -= 1;
+		else
+			tempGear -= 2;
+	}
+	else {
+		if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
+			if (GetTargetGear() > 1) {
+				ChangeGearBy(-1);
+			}
+			else if (GetTargetGear() == 1) {
+				EngineState = EEngineState::EES_Reverse;
+				ChangeGearBy(-2);
+			}
+			else if (GetTargetGear() == 0) {
+				EngineState = EEngineState::EES_Reverse;
+				ChangeGearBy(-1);
+			}
 		}
 	}
 }
@@ -134,7 +158,7 @@ void UCarMovementComponent::HandbrakeOff()
 
 void UCarMovementComponent::RestartEngine()
 {
-	SetTargetGear(0, true);
+	
 	EngineState = EEngineState::EES_Forward;
 	GetWorld()->GetTimerManager().ClearTimer(EngineRestartTimerHandle);
 }

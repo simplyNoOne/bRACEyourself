@@ -3,3 +3,7 @@
 
 #include "CustomGameState.h"
 
+ACustomGameState::ACustomGameState()
+{
+	
+}
