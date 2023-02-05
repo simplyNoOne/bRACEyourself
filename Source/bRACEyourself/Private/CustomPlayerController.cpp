@@ -2,7 +2,7 @@
 
 
 #include "CustomPlayerController.h"
-#include "Public/CarInterface.h"
+#include "CarInterface.h"
 #include "Car.h"
 
 void ACustomPlayerController::Tick(float deltaTime)

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
-#include "Public/CarInterface.h"
+#include "CarInterface.h"
 #include "Car.generated.h"
 
 
@@ -53,11 +53,14 @@ public:
 
 	void UpdateDistance(float dT);
 
-
+	UFUNCTION(BlueprintCallable)
 	inline void SetDistance(float distance) { Distance = distance; }
+	UFUNCTION(BlueprintCallable)
 	inline void SetEnergy(float energy) { Energy = energy; }
 
+	UFUNCTION(BlueprintCallable)
 	inline float GetDistance() { return Distance; }
+	UFUNCTION(BlueprintCallable)
 	inline float GetEnergyRatio() { return Energy / MaxEnergy; }
 	
 };
