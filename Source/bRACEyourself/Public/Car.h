@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
 #include "CarInterface.h"
+#include "CarMovementComponent.h"
 #include "Car.generated.h"
-
 
 
 class UCameraComponent;
@@ -42,25 +42,35 @@ public:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable)
 	float GetCarSpeed();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable)
 	float GetCarRPM();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable)
 	int32 GetCarGear();
 
+	UFUNCTION(BlueprintCallable)
+	float GetDistance();
+
+	UFUNCTION(BlueprintCallable)
+	float GetEnergyRatio();
+
+	EEngineState GetEngineState();
+
+	float GetMaxRPM();
+
+
 	void UpdateDistance(float dT);
+
+	void UpdateEnergy(float dT);
+
+
 
 	UFUNCTION(BlueprintCallable)
 	inline void SetDistance(float distance) { Distance = distance; }
 	UFUNCTION(BlueprintCallable)
 	inline void SetEnergy(float energy) { Energy = energy; }
-
-	UFUNCTION(BlueprintCallable)
-	inline float GetDistance() { return Distance; }
-	UFUNCTION(BlueprintCallable)
-	inline float GetEnergyRatio() { return Energy / MaxEnergy; }
 	
 };

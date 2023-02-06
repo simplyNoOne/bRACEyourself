@@ -34,11 +34,14 @@ UCarMovementComponent::UCarMovementComponent()
 	TransmissionSetup.ForwardGearRatios[4] = 7.f;
 	TransmissionSetup.ForwardGearRatios[5] = 4.f;
 	
+	EnergyConsumption = 0.f;
+	EnergyConsumptionMultiplier = 0.0002f;
 }
 
 void UCarMovementComponent::MoveForward(float Val)
 {
 	if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
+		EnergyConsumption = GetEngineRotationSpeed() * abs(Val) * EnergyConsumptionMultiplier;
 		if (!bGearChanging) {
 			if (Val >= 0.f) {
 				if (EngineState == EEngineState::EES_Forward) {
@@ -60,15 +63,17 @@ void UCarMovementComponent::MoveForward(float Val)
 				EngineState = EEngineState::EES_Failure;
 				SetThrottleInput(0.f);
 			}
-			if (GetEngineRotationSpeed() < 1200.f && GetTargetGear() > 1 && !VehicleState.bVehicleInAir) {
+			if (GetEngineRotationSpeed() < 1200.f && !ShouldIgnoreRPMDrop()) {
 				if (GEngine)
 					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MEH"));
 				SetThrottleInput(0.f);
-				SetTargetGear(0, true);
 				EngineState = EEngineState::EES_Off;
 				GetWorld()->GetTimerManager().SetTimer(EngineRestartTimerHandle, this, &UCarMovementComponent::RestartEngine, 3.f, false);
 			}
 		}
+	}
+	else {
+		EnergyConsumption = 0.f;
 	}
 }
 
@@ -86,7 +91,7 @@ void UCarMovementComponent::GearUp()
 			tempGear += 2;
 	}
 	else {
-		if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
+		if (EngineState != EEngineState::EES_Failure ) {
 			if (GetTargetGear() < 6) {
 				if (EngineState == EEngineState::EES_Reverse) {
 					EngineState = EEngineState::EES_Forward;
@@ -109,7 +114,7 @@ void UCarMovementComponent::GearDown()
 			tempGear -= 2;
 	}
 	else {
-		if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
+		if (EngineState != EEngineState::EES_Failure) {
 			if (GetTargetGear() > 1) {
 				ChangeGearBy(-1);
 			}
@@ -148,7 +153,7 @@ void UCarMovementComponent::AfterGearChange()
 
 void UCarMovementComponent::HandbrakeOn()
 {
-	SetHandbrakeInput(false);
+	SetHandbrakeInput(true);
 }
 
 void UCarMovementComponent::HandbrakeOff()
@@ -158,9 +163,23 @@ void UCarMovementComponent::HandbrakeOff()
 
 void UCarMovementComponent::RestartEngine()
 {
-	
+	SetTargetGear(0, true);
 	EngineState = EEngineState::EES_Forward;
 	GetWorld()->GetTimerManager().ClearTimer(EngineRestartTimerHandle);
+	
+}
+
+bool UCarMovementComponent::ShouldIgnoreRPMDrop()
+{
+	if (TargetGear <= 1)
+		return true;
+	if (GetHandbrakeInput())
+		return true;
+	if (VehicleState.bVehicleInAir)
+		return true;
+	if (bGearChanging)
+		return true;
+	return false;
 }
 
 

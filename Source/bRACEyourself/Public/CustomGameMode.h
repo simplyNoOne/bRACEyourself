@@ -22,8 +22,28 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "CustomEvents")
 	FStartCountdown StartCountdown;
 
+private:
+
+	bool bGamePaused;
+
+public:
+
 	ACustomGameMode();
 
 	void BeginPlay() override;
+
+	inline bool IsGamePaused() { return bGamePaused; }
+
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Framework")
+	void PauseGame();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Framework")
+	void ResumeGame();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Framework")
+	void QuitToMenu();
+
+	
 	
 };

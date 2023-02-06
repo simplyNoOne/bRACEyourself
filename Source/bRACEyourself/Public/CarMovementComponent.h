@@ -10,6 +10,9 @@
  * 
  */
 
+
+
+
 UENUM(BlueprintType)
 enum class EEngineState : uint8{
 	EES_Forward UMETA(DisplayName = "Forward"),
@@ -26,6 +29,9 @@ class BRACEYOURSELF_API UCarMovementComponent : public UChaosWheeledVehicleMovem
 	GENERATED_BODY()
 public:
 	EEngineState EngineState;
+
+	UPROPERTY(EditAnywhere, Category = "Car")
+	float EnergyConsumptionMultiplier;
 	
 
 private:
@@ -34,6 +40,7 @@ private:
 
 	int32 tempGear;
 	bool bGearChanging;
+	float EnergyConsumption;
 
 public:
 	UCarMovementComponent();
@@ -51,5 +58,8 @@ public:
 	void HandbrakeOff();
 
 	void RestartEngine();
+	bool ShouldIgnoreRPMDrop();
+
+	inline float GetEnergyConsumption() { return EnergyConsumption; }
 	
 };

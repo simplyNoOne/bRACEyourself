@@ -46,24 +46,54 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("GearDown", IE_Pressed, MovementComponent, &UCarMovementComponent::GearDown);
 	PlayerInputComponent->BindAction("Handbrake", IE_Pressed, MovementComponent, &UCarMovementComponent::HandbrakeOn);
 	PlayerInputComponent->BindAction("Handbrake", IE_Released, MovementComponent, &UCarMovementComponent::HandbrakeOff);
+	
 }
 
 void ACar::UpdateDistance(float dT)
 {
-	Distance += MovementComponent->GetForwardSpeed()* dT;
+	Distance += (MovementComponent->GetForwardSpeed()* dT)/100;
 }
 
-float ACar::GetCarRPM_Implementation()
+void ACar::UpdateEnergy(float dT)
+{
+	if(Energy > 0.f)
+		Energy -=( MovementComponent->GetEnergyConsumption() * dT);
+	else
+		Energy = 0.f;
+	
+}
+
+EEngineState ACar::GetEngineState()
+{
+	 return MovementComponent->EngineState; 
+}
+
+float ACar::GetMaxRPM()
+{
+	return MovementComponent->GetEngineMaxRotationSpeed();
+}
+
+float ACar::GetCarRPM()
 {
 	return MovementComponent->GetEngineRotationSpeed();
 }
 
-int32 ACar::GetCarGear_Implementation()
+int32 ACar::GetCarGear()
 {
 	return MovementComponent->GetTargetGear();
 }
 
-float ACar::GetCarSpeed_Implementation()
+float ACar::GetDistance()
+{
+	 return Distance; 
+}
+
+float ACar::GetEnergyRatio()
+{
+	return Energy / MaxEnergy;
+}
+
+float ACar::GetCarSpeed()
 {
 	return (MovementComponent->GetForwardSpeed() * 0.036);
 }

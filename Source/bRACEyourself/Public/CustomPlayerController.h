@@ -6,12 +6,18 @@
 #include "GameFramework/PlayerController.h"
 #include "CustomPlayerController.generated.h"
 
+class ACar;
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSpeed, float, speed);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateRPM, float, rpm);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateGear, int32, gear);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateDistance, float, distance);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateEnergy, float, energy);
 /**
  * 
  */
@@ -31,9 +37,25 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "HUD")
 	FUpdateGear UpdateGear;
 
+	UPROPERTY(BlueprintAssignable, Category = "HUD")
+	FUpdateDistance UpdateDistance;
+
+	UPROPERTY(BlueprintAssignable, Category = "HUD")
+	FUpdateEnergy UpdateEnergy;
+
+private:
+	ACar* Car;
+
 public:
+
+	ACustomPlayerController();
+
+	void BeginPlay();
+
 	void Tick(float deltaTime) override;
 
 	void Update(float dT);
+
+	void PauseGame();
 	
 };
