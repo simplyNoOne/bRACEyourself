@@ -32,7 +32,7 @@ ACar::ACar()
 	MaxEnergy = 100.f;
 	Energy = MaxEnergy;
 	Distance = 0.f;
-	
+
 }
 
 void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -61,6 +61,11 @@ void ACar::UpdateEnergy(float dT)
 	else
 		Energy = 0.f;
 	
+}
+
+void ACar::StartCar()
+{
+	MovementComponent->EngineState = EEngineState::EES_Forward;
 }
 
 EEngineState ACar::GetEngineState()

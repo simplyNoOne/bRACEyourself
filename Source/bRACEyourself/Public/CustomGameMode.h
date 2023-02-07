@@ -10,19 +10,19 @@
 * 
 */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartCountdown);
-
- 
 UCLASS()
 class BRACEYOURSELF_API ACustomGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "CustomEvents")
-	FStartCountdown StartCountdown;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Framework")
+	int32 CountdownTime;
 
 private:
+
+	FTimerHandle CountdownFinished;
 
 	bool bGamePaused;
 
@@ -34,6 +34,11 @@ public:
 
 	inline bool IsGamePaused() { return bGamePaused; }
 
+	UFUNCTION(BlueprintNativeEvent, Category = "Framework")
+	void StartGame();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Framework")
+	void StartRace();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Framework")
 	void PauseGame();

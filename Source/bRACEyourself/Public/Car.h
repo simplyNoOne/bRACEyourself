@@ -67,6 +67,10 @@ public:
 	void UpdateEnergy(float dT);
 
 
+	UFUNCTION(BlueprintCallable)
+	void StartCar();
+
+
 
 	UFUNCTION(BlueprintCallable)
 	inline void SetDistance(float distance) { Distance = distance; }

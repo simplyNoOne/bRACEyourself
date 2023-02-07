@@ -7,7 +7,7 @@
 
 UCarMovementComponent::UCarMovementComponent()
 {
-	EngineState = EEngineState::EES_Forward;
+	EngineState = EEngineState::EES_Off;
 
 	WheelSetups.SetNum(4);
 	WheelSetups[0].WheelClass = UCarFrontWheel::StaticClass();
