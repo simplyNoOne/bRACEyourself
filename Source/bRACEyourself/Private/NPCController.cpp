@@ -9,12 +9,14 @@
 void ANPCController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ANPC* NPC = Cast<ANPC>(GetPawn());
-	if (NPC) 
-		PathToFollow = NPC->Path->SplinePath;
 }
 
-void ANPCController::WalkPath_Implementation()
+void ANPCController::UpdatePath(ASpline* Path)
+{
+	 PathToFollow = Path->SplinePath; 
+}
+
+
+void ANPCController::WalkPath_Implementation(float Duration)
 {
 }

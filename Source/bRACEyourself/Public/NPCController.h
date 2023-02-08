@@ -7,6 +7,7 @@
 #include "NPCController.generated.h"
 
 class USplineComponent;
+class ASpline;
 
 /**
  * 
@@ -25,6 +26,8 @@ public:
 	void BeginPlay() override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "NPCs")
-	void WalkPath();
+	void WalkPath(float Duration);
+
+	void UpdatePath(ASpline* Path);
 	
 };

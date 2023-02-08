@@ -17,7 +17,7 @@ public:
 	// Sets default values for this character's properties
 	ANPC();
 
-	UPROPERTY(EditAnywhere, Category = "NPCs")
+	UPROPERTY(VisibleAnywhere, Category = "NPCs")
 	ASpline* Path;
 
 protected:
@@ -30,5 +30,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable, Category = "NPCs")
+		void SetNPCPath(ASpline* pathToSet); 
 
 };

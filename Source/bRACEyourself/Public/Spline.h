@@ -17,7 +17,7 @@ public:
 	// Sets default values for this actor's properties
 	ASpline();
 
-	UPROPERTY(EditAnywhere, Category = "NPCs")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "NPCs")
 	USplineComponent* SplinePath;
 
 protected:
@@ -27,5 +27,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Blueprintable, Category = "NPCs")
+	void AddPoint(FVector Location);
 
 };

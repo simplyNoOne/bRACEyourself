@@ -19,7 +19,6 @@ ANPC::ANPC()
 	AutoPossessAI = EAutoPossessAI::Spawned;
 	AIControllerClass = ANPCController::StaticClass();
 	
-	//Path = CreateDefaultSubobject<ASpline>(TEXT("Path"));
 
 }
 
@@ -42,4 +41,15 @@ void ANPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ANPC::SetNPCPath(ASpline* pathToSet)
+{
+	 Path = pathToSet; 
+	 ANPCController* NPCCont = Cast<ANPCController>(GetController());
+	 if (NPCCont) {
+		 NPCCont->UpdatePath(Path);
+		 float Duration = (Path->SplinePath->GetSplineLength() / GetMovementComponent()->GetMaxSpeed());
+		 NPCCont->WalkPath(Duration);
+	 }
 }

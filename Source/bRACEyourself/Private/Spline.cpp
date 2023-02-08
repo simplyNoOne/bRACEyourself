@@ -28,3 +28,8 @@ void ASpline::Tick(float DeltaTime)
 
 }
 
+void ASpline::AddPoint(FVector Location)
+{
+	SplinePath->AddSplinePoint(Location, ESplineCoordinateSpace::World, true);
+}
+

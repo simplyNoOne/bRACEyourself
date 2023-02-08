@@ -6,6 +6,8 @@
 #include "Camera/CameraComponent.h"
 #include "CarMovementComponent.h"
 
+
+
 ACar::ACar()
 {
 	
@@ -20,6 +22,7 @@ ACar::ACar()
 	SpringArm->bInheritYaw = true;
 	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritRoll = false;
+	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 15.f;
 	SpringArm->CameraLagMaxDistance = 250.f;
@@ -41,6 +44,7 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("MoveForward",MovementComponent, &UCarMovementComponent::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", MovementComponent, &UCarMovementComponent::MoveRight);
+	PlayerInputComponent->BindAxis("LookRight", this, &APawn::AddControllerYawInput);
 
 	PlayerInputComponent->BindAction("GearUp", IE_Pressed, MovementComponent, &UCarMovementComponent::GearUp);
 	PlayerInputComponent->BindAction("GearDown", IE_Pressed, MovementComponent, &UCarMovementComponent::GearDown);
@@ -48,6 +52,7 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Handbrake", IE_Released, MovementComponent, &UCarMovementComponent::HandbrakeOff);
 	
 }
+
 
 void ACar::UpdateDistance(float dT)
 {
@@ -65,6 +70,7 @@ void ACar::UpdateEnergy(float dT)
 
 void ACar::StartCar()
 {
+	MovementComponent->SetTargetGear(0, true);
 	MovementComponent->EngineState = EEngineState::EES_Forward;
 }
 
