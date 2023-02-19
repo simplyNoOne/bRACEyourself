@@ -63,9 +63,10 @@ void ACustomPlayerController::Update(float dT) {
 		if (Car->GetCarSpeed() < 1.f)
 			CustomGM->LoseGame();
 	}
-	if(Car->GetEnergyRatio() == 0.f)
+	if (Car->GetEnergyRatio() == 0.f) {
 		if (Car->GetCarSpeed() < 1.f)
 			CustomGM->LoseGame();
+	}
 
 }
 
@@ -84,3 +85,5 @@ void ACustomPlayerController::EnergyBoost()
 {
 	UpdateEnergyBoosted.Broadcast();
 }
+
+

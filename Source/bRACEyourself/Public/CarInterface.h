@@ -29,4 +29,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void SetThrottle(float value);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void CarCrash();
+
 };

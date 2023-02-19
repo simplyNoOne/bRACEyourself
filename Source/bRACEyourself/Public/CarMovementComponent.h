@@ -10,8 +10,12 @@
  * 
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEngineFailure);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEngineOn);
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEngineOff);
 
 UENUM(BlueprintType)
 enum class EEngineState : uint8{
@@ -32,7 +36,15 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Car")
 	float EnergyConsumptionMultiplier;
-	
+
+	UPROPERTY()
+	FEngineFailure EngineFailure;
+
+	UPROPERTY()
+	FEngineOn EngineOn;
+
+	UPROPERTY()
+	FEngineOff EngineOff;
 
 private:
 	FTimerHandle GearChangeTimerHandle;
@@ -54,10 +66,15 @@ public:
 	void AfterGearChange();
 
 	void RestartEngine();
+	void OnEngineFailure();
+	void OnEngineOff();
+
 	bool ShouldIgnoreRPMDrop();
 
 	inline float GetEnergyConsumption() { return EnergyConsumption; }
 
 	void SetThrottleInput(float Throttle);
+	
+
 	
 };

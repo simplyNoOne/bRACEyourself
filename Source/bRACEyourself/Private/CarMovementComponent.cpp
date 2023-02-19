@@ -59,17 +59,10 @@ void UCarMovementComponent::MoveForward(float Val)
 				SetBrakeInput(-Val);
 			}
 			if (GetEngineRotationSpeed() > (GetEngineMaxRotationSpeed() - 500.f) && GetTargetGear() != 6) {
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("BOOOOM"));
-				EngineState = EEngineState::EES_Failure;
-				SetThrottleInput(0.f); 
+				OnEngineFailure();
 			}
 			if (GetEngineRotationSpeed() < 1200.f && !ShouldIgnoreRPMDrop() && Val > 0.5f) {
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MEH"));
-				SetThrottleInput(0.f);
-				EngineState = EEngineState::EES_Off;
-				GetWorld()->GetTimerManager().SetTimer(EngineRestartTimerHandle, this, &UCarMovementComponent::RestartEngine, 3.f, false);
+				OnEngineOff();
 			}
 		}
 	}
@@ -145,6 +138,7 @@ void UCarMovementComponent::AfterGearChange()
 
 void UCarMovementComponent::RestartEngine()
 {
+	EngineOn.Broadcast();
 	SetTargetGear(0, true);
 	EngineState = EEngineState::EES_Forward;
 	GetWorld()->GetTimerManager().ClearTimer(EngineRestartTimerHandle);
@@ -170,6 +164,27 @@ void UCarMovementComponent::SetThrottleInput(float Throttle)
 	if (GetOwner()->Implements<UCarInterface>()) {
 		ICarInterface::Execute_SetThrottle(GetOwner(), Throttle);
 	}
+}
+
+void UCarMovementComponent::OnEngineFailure()
+{
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("BOOOOM"));
+	EngineState = EEngineState::EES_Failure;
+	SetThrottleInput(0.f);
+	EngineFailure.Broadcast();
+}
+
+void UCarMovementComponent::OnEngineOff()
+{
+	EngineOff.Broadcast();
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MEH"));
+	SetThrottleInput(0.f);
+	EngineState = EEngineState::EES_Off;
+	GetWorld()->GetTimerManager().SetTimer(EngineRestartTimerHandle, this, &UCarMovementComponent::RestartEngine, 2.f, false);
+	
 }
 
 

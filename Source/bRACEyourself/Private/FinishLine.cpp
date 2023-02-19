@@ -23,6 +23,8 @@ AFinishLine::AFinishLine()
 	Collision->SetupAttachment(GetRootComponent());
 	Collision->SetCollisionProfileName("Trigger");
 	Collision->SetBoxExtent(FVector(1200.f, 32.f, 400.f));
+
+	bCrossed = false;
 }
 
 // Called when the game starts or when spawned
@@ -42,9 +44,12 @@ void AFinishLine::Tick(float DeltaTime)
 
 void AFinishLine::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("lkahsikjsh"));
-	if (OtherActor->Implements<UCarInterface>()) {
-		FinishLineCrossed.Broadcast();
+	if (!bCrossed) {
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("lkahsikjsh"));
+		if (OtherActor->Implements<UCarInterface>()) {
+			bCrossed = true;
+			FinishLineCrossed.Broadcast();
+		}
 	}
 }
 

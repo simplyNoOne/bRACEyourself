@@ -51,6 +51,10 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("GearDown", IE_Pressed, MovementComponent, &UCarMovementComponent::GearDown);
 	PlayerInputComponent->BindAction("Handbrake", IE_Pressed, this, &ACar::SetHandbrakeOn);
 	PlayerInputComponent->BindAction("Handbrake", IE_Released, this, &ACar::SetHandbrakeOff);
+
+	MovementComponent->EngineFailure.AddDynamic(this, &ACar::OnEngineFailure);
+	MovementComponent->EngineOff.AddDynamic(this, &ACar::OnEngineOff);
+	MovementComponent->EngineOn.AddDynamic(this, &ACar::OnEngineOn);
 	
 }
 
@@ -101,6 +105,23 @@ void ACar::SetSteering(float value)
 	MovementComponent->SetSteeringInput(value);
 }
 
+void ACar::OnEngineFailure_Implementation()
+{
+}
+
+void ACar::OnEngineOff_Implementation()
+{
+}
+
+void ACar::OnEngineOn_Implementation()
+{
+}
+
+void ACar::CarCrash_Implementation()
+{
+	MovementComponent->OnEngineFailure();
+}
+
 EEngineState ACar::GetEngineState()
 {
 	 return MovementComponent->EngineState; 
@@ -133,7 +154,7 @@ float ACar::GetEnergyRatio()
 
 float ACar::GetCarSpeed()
 {
-	return (MovementComponent->GetForwardSpeed() * 0.036);
+	return abs(MovementComponent->GetForwardSpeed() * 0.036);
 }
 
 void ACar::NPChit_Implementation() {

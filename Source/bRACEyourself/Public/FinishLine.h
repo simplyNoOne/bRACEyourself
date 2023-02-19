@@ -27,7 +27,6 @@ public:
 	AFinishLine();
 
 
-
 	USceneComponent* Root;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Checkpoint")
@@ -38,6 +37,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Checkpoint")
 	FFinishLineCrossed FinishLineCrossed;
+
+private:
+	bool bCrossed;
 
 protected:
 	// Called when the game starts or when spawned

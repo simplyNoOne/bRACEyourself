@@ -49,6 +49,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "HUD")
 	FEnergyBoost UpdateEnergyBoosted;
 
+
 private:
 	ACar* Car;
 
@@ -68,4 +69,5 @@ public:
 	
 	UFUNCTION()
 	void EnergyBoost();
+
 };

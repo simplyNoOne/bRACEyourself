@@ -16,6 +16,7 @@ class UCarMovementComponent;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnergyBoosted);
+
 /**
  * 
  */
@@ -87,11 +88,29 @@ public:
 	void StartCar();
 
 
+	UFUNCTION()
+	void SetHandbrakeOn();
+	UFUNCTION()
+	void SetHandbrakeOff();
+
+	UFUNCTION()
+	void SetSteering(float value);
+
+	UFUNCTION( BlueprintNativeEvent)
+	void OnEngineFailure();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnEngineOff();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void  OnEngineOn();
 
 	UFUNCTION(BlueprintCallable)
 	inline void SetDistance(float distance) { Distance = distance; }
 	UFUNCTION(BlueprintCallable)
 	inline void SetEnergy(float energy) { Energy = energy; }
+
+
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -101,13 +120,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void SetThrottle(float value);
 
-	UFUNCTION()
-	void SetHandbrakeOn();
-	UFUNCTION()
-	void SetHandbrakeOff();
 
-	UFUNCTION()
-	void SetSteering(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void CarCrash();
+
 
 	
 };
