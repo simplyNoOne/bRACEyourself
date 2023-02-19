@@ -47,19 +47,17 @@ public:
 	
 
 	void MoveForward(float Val);
-	void MoveRight(float Val);
 
 	void GearUp();
 	void GearDown();
 	void ChangeGearBy(int32 value);
 	void AfterGearChange();
 
-	void HandbrakeOn();
-	void HandbrakeOff();
-
 	void RestartEngine();
 	bool ShouldIgnoreRPMDrop();
 
 	inline float GetEnergyConsumption() { return EnergyConsumption; }
+
+	void SetThrottleInput(float Throttle);
 	
 };

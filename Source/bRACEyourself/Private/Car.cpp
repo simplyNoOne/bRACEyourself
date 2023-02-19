@@ -5,6 +5,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "CarMovementComponent.h"
+#include "CustomPlayerController.h"
 
 
 
@@ -43,13 +44,13 @@ void ACar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward",MovementComponent, &UCarMovementComponent::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", MovementComponent, &UCarMovementComponent::MoveRight);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ACar::SetSteering);
 	PlayerInputComponent->BindAxis("LookRight", this, &APawn::AddControllerYawInput);
 
 	PlayerInputComponent->BindAction("GearUp", IE_Pressed, MovementComponent, &UCarMovementComponent::GearUp);
 	PlayerInputComponent->BindAction("GearDown", IE_Pressed, MovementComponent, &UCarMovementComponent::GearDown);
-	PlayerInputComponent->BindAction("Handbrake", IE_Pressed, MovementComponent, &UCarMovementComponent::HandbrakeOn);
-	PlayerInputComponent->BindAction("Handbrake", IE_Released, MovementComponent, &UCarMovementComponent::HandbrakeOff);
+	PlayerInputComponent->BindAction("Handbrake", IE_Pressed, this, &ACar::SetHandbrakeOn);
+	PlayerInputComponent->BindAction("Handbrake", IE_Released, this, &ACar::SetHandbrakeOff);
 	
 }
 
@@ -63,8 +64,11 @@ void ACar::UpdateEnergy(float dT)
 {
 	if(Energy > 0.f)
 		Energy -=( MovementComponent->GetEnergyConsumption() * dT);
-	else
+	else {
 		Energy = 0.f;
+		MovementComponent->EngineState = EEngineState::EES_Off;
+		MovementComponent->SetThrottleInput( 0);
+	}
 	
 }
 
@@ -72,6 +76,29 @@ void ACar::StartCar()
 {
 	MovementComponent->SetTargetGear(0, true);
 	MovementComponent->EngineState = EEngineState::EES_Forward;
+}
+
+void ACar::SetThrottle_Implementation(float value)
+{
+	Throttle = value;
+}
+
+void ACar::SetHandbrakeOn()
+{
+	Handbrake = true;
+	MovementComponent->SetHandbrakeInput(true);
+}
+
+void ACar::SetHandbrakeOff()
+{
+	Handbrake = false;
+	MovementComponent->SetHandbrakeInput(false);
+}
+
+void ACar::SetSteering(float value)
+{
+	Steering = value;
+	MovementComponent->SetSteeringInput(value);
 }
 
 EEngineState ACar::GetEngineState()
@@ -107,4 +134,11 @@ float ACar::GetEnergyRatio()
 float ACar::GetCarSpeed()
 {
 	return (MovementComponent->GetForwardSpeed() * 0.036);
+}
+
+void ACar::NPChit_Implementation() {
+	Energy += 10.f;
+	if (Energy > MaxEnergy)
+		Energy = MaxEnergy;
+	EnergyBoosted.Broadcast();
 }

@@ -7,6 +7,7 @@
 #include "CustomPlayerController.generated.h"
 
 class ACar;
+class ACustomGameMode;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateSpeed, float, speed);
@@ -15,9 +16,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateRPM, float, rpm);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateGear, int32, gear);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateDistance, float, distance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateTime, int32, timeSec);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateEnergy, float, energy);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnergyBoost);
 /**
  * 
  */
@@ -38,13 +41,18 @@ public:
 	FUpdateGear UpdateGear;
 
 	UPROPERTY(BlueprintAssignable, Category = "HUD")
-	FUpdateDistance UpdateDistance;
+	FUpdateTime UpdateTime;
 
 	UPROPERTY(BlueprintAssignable, Category = "HUD")
 	FUpdateEnergy UpdateEnergy;
 
+	UPROPERTY(BlueprintAssignable, Category = "HUD")
+	FEnergyBoost UpdateEnergyBoosted;
+
 private:
 	ACar* Car;
+
+	ACustomGameMode* CustomGM;
 
 public:
 
@@ -58,4 +66,6 @@ public:
 
 	void PauseGame();
 	
+	UFUNCTION()
+	void EnergyBoost();
 };

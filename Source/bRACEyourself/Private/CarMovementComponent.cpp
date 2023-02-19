@@ -4,6 +4,7 @@
 #include "CarMovementComponent.h"
 #include "CarBackWheel.h"
 #include "CarFrontWheel.h"
+#include "CarInterface.h"
 
 UCarMovementComponent::UCarMovementComponent()
 {
@@ -35,7 +36,7 @@ UCarMovementComponent::UCarMovementComponent()
 	TransmissionSetup.ForwardGearRatios[5] = 4.f;
 	
 	EnergyConsumption = 0.f;
-	EnergyConsumptionMultiplier = 0.0002f;
+	EnergyConsumptionMultiplier = 0.0005f;
 }
 
 void UCarMovementComponent::MoveForward(float Val)
@@ -61,9 +62,9 @@ void UCarMovementComponent::MoveForward(float Val)
 				if (GEngine)
 					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("BOOOOM"));
 				EngineState = EEngineState::EES_Failure;
-				SetThrottleInput(0.f);
+				SetThrottleInput(0.f); 
 			}
-			if (GetEngineRotationSpeed() < 1200.f && !ShouldIgnoreRPMDrop()) {
+			if (GetEngineRotationSpeed() < 1200.f && !ShouldIgnoreRPMDrop() && Val > 0.5f) {
 				if (GEngine)
 					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MEH"));
 				SetThrottleInput(0.f);
@@ -77,11 +78,6 @@ void UCarMovementComponent::MoveForward(float Val)
 	}
 }
 
-void UCarMovementComponent::MoveRight(float Val)
-{
-	SetSteeringInput(Val);
-}
-
 void UCarMovementComponent::GearUp()
 {
 	if (bGearChanging) {
@@ -91,7 +87,7 @@ void UCarMovementComponent::GearUp()
 			tempGear += 2;
 	}
 	else {
-		if (EngineState != EEngineState::EES_Failure ) {
+		if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
 			if (GetTargetGear() < 6) {
 				if (EngineState == EEngineState::EES_Reverse) {
 					EngineState = EEngineState::EES_Forward;
@@ -114,7 +110,7 @@ void UCarMovementComponent::GearDown()
 			tempGear -= 2;
 	}
 	else {
-		if (EngineState != EEngineState::EES_Failure) {
+		if (EngineState != EEngineState::EES_Failure && EngineState != EEngineState::EES_Off) {
 			if (GetTargetGear() > 1) {
 				ChangeGearBy(-1);
 			}
@@ -147,20 +143,6 @@ void UCarMovementComponent::AfterGearChange()
 	bGearChanging = false;
 }
 
-
-
-
-
-void UCarMovementComponent::HandbrakeOn()
-{
-	SetHandbrakeInput(true);
-}
-
-void UCarMovementComponent::HandbrakeOff()
-{
-	SetHandbrakeInput(false);
-}
-
 void UCarMovementComponent::RestartEngine()
 {
 	SetTargetGear(0, true);
@@ -180,6 +162,14 @@ bool UCarMovementComponent::ShouldIgnoreRPMDrop()
 	if (bGearChanging)
 		return true;
 	return false;
+}
+
+void UCarMovementComponent::SetThrottleInput(float Throttle)
+{
+	Super::SetThrottleInput(Throttle);
+	if (GetOwner()->Implements<UCarInterface>()) {
+		ICarInterface::Execute_SetThrottle(GetOwner(), Throttle);
+	}
 }
 
 

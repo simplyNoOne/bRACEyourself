@@ -20,6 +20,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "NPCs")
 	USplineComponent* SplinePath;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "NPCs")
+	bool bGhostSpline;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,5 +33,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Blueprintable, Category = "NPCs")
 	void AddPoint(FVector Location);
+	
+	float GetLength();
 
 };

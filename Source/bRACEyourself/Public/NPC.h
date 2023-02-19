@@ -20,6 +20,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "NPCs")
 	ASpline* Path;
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -32,6 +33,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "NPCs")
-		void SetNPCPath(ASpline* pathToSet); 
+	void SetNPCPath(ASpline* pathToSet); 
 
 };

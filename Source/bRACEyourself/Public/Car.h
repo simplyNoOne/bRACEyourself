@@ -13,6 +13,9 @@ class UCameraComponent;
 class USpringArmComponent;
 class UCarMovementComponent;
 
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnergyBoosted);
 /**
  * 
  */
@@ -31,6 +34,18 @@ public:
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = "Camera", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Car")
+	float NPCEnergyBoost;
+
+	FEnergyBoosted EnergyBoosted;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Car")
+	float Throttle;
+	UPROPERTY(BlueprintReadOnly, Category = "Car")
+	float Steering;
+	UPROPERTY(BlueprintReadOnly, Category = "Car")
+	bool Handbrake;
 	
 private:
 	float Distance;
@@ -77,5 +92,22 @@ public:
 	inline void SetDistance(float distance) { Distance = distance; }
 	UFUNCTION(BlueprintCallable)
 	inline void SetEnergy(float energy) { Energy = energy; }
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void NPChit();
+
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SetThrottle(float value);
+
+	UFUNCTION()
+	void SetHandbrakeOn();
+	UFUNCTION()
+	void SetHandbrakeOff();
+
+	UFUNCTION()
+	void SetSteering(float value);
+
 	
 };

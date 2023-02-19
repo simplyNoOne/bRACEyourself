@@ -2,7 +2,9 @@
 
 
 #include "Spline.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
+#include "NPCSpawner.h"
 
 // Sets default values
 ASpline::ASpline()
@@ -12,13 +14,20 @@ ASpline::ASpline()
 
 	SplinePath = CreateDefaultSubobject<USplineComponent>(TEXT("SplinePath"));
 
+	bGhostSpline = false;
+	
 }
 
 // Called when the game starts or when spawned
 void ASpline::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (!bGhostSpline) {
+		AActor* Spawner = UGameplayStatics::GetActorOfClass(GetWorld(), ANPCSpawner::StaticClass());
+		if (Spawner)
+			Cast<ANPCSpawner>(Spawner)->SpawnNPCs(this);
+	}
 }
 
 // Called every frame
@@ -31,5 +40,10 @@ void ASpline::Tick(float DeltaTime)
 void ASpline::AddPoint(FVector Location)
 {
 	SplinePath->AddSplinePoint(Location, ESplineCoordinateSpace::World, true);
+}
+
+float ASpline::GetLength()
+{
+	return SplinePath->GetSplineLength();
 }
 

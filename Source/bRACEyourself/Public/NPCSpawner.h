@@ -18,20 +18,20 @@ public:
 	// Sets default values for this actor's properties
 	ANPCSpawner();
 
-	ASpline* LeftPath;
-	ASpline* RightPath;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Spawners")
-	float HalfWidth;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Spawners")
 	TSubclassOf<ANPC> NPCclass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spawners")
+	TSubclassOf<AActor> TrackClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawners")
 	USkeletalMesh* meshes[4];
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawners")
-	UAnimBlueprint* blueprints[4];
+	UClass* blueprints[4];
+	
+
+private:
 
 
 //timers needed, at least 3, in order to order all of it ;]
@@ -43,11 +43,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void SpawnNPCs(ASpline* Path);
 
-	void Move();
-
-	void SpawnPath();
-	void SpawnPathPoint();
-	void SpawnNPC();
 
 };
