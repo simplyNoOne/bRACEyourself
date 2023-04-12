@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Checkpoint.h"
 #include "FinishLine.h"
+#include "CarSave.h"
 
 ACustomGameMode::ACustomGameMode()
 {
@@ -19,27 +20,22 @@ ACustomGameMode::ACustomGameMode()
 	bCountTime = false;
 	bGamePaused = false;
 	CheckpointsPassed = 0;
+	bFinishCrossed = false;
 }
 
 void ACustomGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-	
 }
 
 void ACustomGameMode::RestartGame_Implementation()
 {
-
 }
 
 
 
-bool ACustomGameMode::LoadGame_Implementation()
-{
-	return false;
-}
+
 
 void ACustomGameMode::UpdateElapsed(float dT)
 {
@@ -77,8 +73,6 @@ void ACustomGameMode::StartGame_Implementation()
 
 void ACustomGameMode::StartRace_Implementation()
 {
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("clias"));
 	bCountTime = true;
 }
 
@@ -113,6 +107,50 @@ void ACustomGameMode::QuitToMenu_Implementation()
 
 void ACustomGameMode::SaveGame_Implementation(bool UpdateGhost)
 {
+
+	ACustomGameState* CustomGS = Cast<ACustomGameState>(GameState);
+	if (CustomGS) {
+		UCarSave* SaveGameInstance = Cast<UCarSave>(UGameplayStatics::CreateSaveGameObject(UCarSave::StaticClass()));
+
+		//SaveInfo
+		if(UpdateGhost)
+			SaveGameInstance->GhostTrace = GhostRecord;
+		else
+			SaveGameInstance->GhostTrace = GhostReplay;
+
+		SaveGameInstance->BestTimes = CustomGS->Times;
+
+
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, Cast<ACustomGameState>(GameState)->SlotName, 0);
+	}
+}
+
+
+
+void ACustomGameMode::LoadGame_Implementation()
+{
+
+	ACustomGameState* CustomGS = Cast<ACustomGameState>(GameState);
+	if (CustomGS) {
+
+		if (UGameplayStatics::DoesSaveGameExist(CustomGS->SlotName, 0)) {
+
+			//UCarSave* SaveGameInstance = Cast<UCarSave>(UGameplayStatics::CreateSaveGameObject(UCarSave::StaticClass()));
+
+			UCarSave*  SaveGameInstance = Cast<UCarSave>(UGameplayStatics::LoadGameFromSlot(CustomGS->SlotName, 0));
+
+			if (SaveGameInstance) {
+				CustomGS->Times = SaveGameInstance->BestTimes;
+				GhostReplay = SaveGameInstance->GhostTrace;
+				GhostLoaded.Broadcast();
+			}
+		}
+		else {
+			GhostNotLoaded.Broadcast();
+		}
+	}
+	//Load info
+	
 }
 
 
@@ -120,13 +158,14 @@ void ACustomGameMode::SaveGame_Implementation(bool UpdateGhost)
 void ACustomGameMode::OnCheckpointCrossed()
 {
 	CheckpointsPassed++;
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("lkahsikjsh"));
 }
 
 void ACustomGameMode::OnFinishLineCrossed()
 {
-
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("lkahsikjsh"));
-	if (NumCheckpoints == CheckpointsPassed)
-		FinishGame();
+	if (NumCheckpoints == CheckpointsPassed) {
+		if (!bFinishCrossed) {
+			bFinishCrossed = true;
+			FinishGame();
+		}
+	}
 }

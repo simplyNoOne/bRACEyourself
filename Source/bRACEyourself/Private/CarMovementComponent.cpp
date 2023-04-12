@@ -169,8 +169,6 @@ void UCarMovementComponent::SetThrottleInput(float Throttle)
 void UCarMovementComponent::OnEngineFailure()
 {
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("BOOOOM"));
 	EngineState = EEngineState::EES_Failure;
 	SetThrottleInput(0.f);
 	EngineFailure.Broadcast();
@@ -179,8 +177,6 @@ void UCarMovementComponent::OnEngineFailure()
 void UCarMovementComponent::OnEngineOff()
 {
 	EngineOff.Broadcast();
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("MEH"));
 	SetThrottleInput(0.f);
 	EngineState = EEngineState::EES_Off;
 	GetWorld()->GetTimerManager().SetTimer(EngineRestartTimerHandle, this, &UCarMovementComponent::RestartEngine, 2.f, false);

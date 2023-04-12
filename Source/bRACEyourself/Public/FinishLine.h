@@ -39,7 +39,6 @@ public:
 	FFinishLineCrossed FinishLineCrossed;
 
 private:
-	bool bCrossed;
 
 protected:
 	// Called when the game starts or when spawned

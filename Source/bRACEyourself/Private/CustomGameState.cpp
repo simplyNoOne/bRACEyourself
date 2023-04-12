@@ -6,6 +6,8 @@
 ACustomGameState::ACustomGameState()
 {
 	NumberOfScores = 8;
+
+	SlotName = "Save";
 }
 
 bool ACustomGameState::SaveCurrentTime(int32 time)

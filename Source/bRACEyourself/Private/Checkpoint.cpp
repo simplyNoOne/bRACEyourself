@@ -49,7 +49,6 @@ void ACheckpoint::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 	if (OtherActor->Implements<UCarInterface>()) {
 		if (!bAlreadyChecked) {
 			bAlreadyChecked = true;
-			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, TEXT("lkahsikjsh"));
 			CheckpointCrossed.Broadcast();	
 		}
 	}

@@ -10,6 +10,10 @@
 * 
 */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGhostLoaded);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGhostNotLoaded);
+
 UCLASS()
 class BRACEYOURSELF_API ACustomGameMode : public AGameModeBase
 {
@@ -19,10 +23,21 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Framework")
 	int32 CountdownTime;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Framework")
 	int32 ElapsedSeconds;
 
-	
+	UPROPERTY( BlueprintCallable, BlueprintAssignable, Category = "Ghost")
+	FGhostLoaded GhostLoaded;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category = "Ghost")
+	FGhostNotLoaded GhostNotLoaded;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Ghost")
+	TArray<FTransform> GhostReplay;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Ghost")
+	TArray<FTransform> GhostRecord;
 
 private:
 
@@ -37,6 +52,10 @@ private:
 	int32 CheckpointsPassed;
 
 	int32 NumCheckpoints;
+
+	bool bFinishCrossed;
+
+	
 
 
 public:
@@ -74,8 +93,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Framework")
 	void SaveGame(bool UpdateGhost);
 
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Framework")
-	bool LoadGame();
+	void LoadGame();
 
 	UFUNCTION()
 	void UpdateElapsed(float dT);

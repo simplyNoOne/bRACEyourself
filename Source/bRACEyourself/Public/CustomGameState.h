@@ -24,9 +24,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Framework")
 	int32 NumberOfScores;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Framework")
+	FString SlotName;
+
 private:
 	
 	float LastTime;
+	
 
 
 public:
